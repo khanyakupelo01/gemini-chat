@@ -24,5 +24,16 @@ app.get('/expressions', (req, res, next) => {
   ]);
 });
 
+app.get('/expressions/:id', (req, res, next) => {
+
+  const found = getElementById(req.params.name, expressions);
+
+  if (!found) {
+    res.status(404).send('Expression not found');
+    return;
+  }
+  res.send(found);
+});
+
 
 module.exports = { app };
