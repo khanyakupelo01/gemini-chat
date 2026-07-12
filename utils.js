@@ -14,8 +14,11 @@ const getIndexById = (id, elementList) => {
 };
 
 const createElement = (elementType, queryArguments) => {
-  if (queryArguments.hasOwnProperty('emoji') &&
-    queryArguments.hasOwnProperty('name')) {
+
+  const hasEmoji = Object.prototype.hasOwnProperty.call(queryArguments, 'emoji');
+  const hasName = Object.prototype.hasOwnProperty.call(queryArguments, 'name');
+
+  if (hasEmoji && hasName) {
     let currentId;
     if (elementType === 'expressions') {
       expressionIdCounter += 1;
