@@ -1,40 +1,33 @@
-// app.js
 const express = require('express');
 const app = express();
 
+// Use static server to serve the Express Yourself Website
+app.use(express.static('public'));
 
-//NOTE -  Tells Express: “If someone visits my site, look inside the public folder and send files from there. ”Example: if public/index.html exists, visiting / can show that page. “Static” means normal files (HTML, CSS, JS, images) that are sent as-is.
-
-app.use(express.static("public"));
 const { getElementById, getIndexById, updateElement,
   seedElements, createElement } = require('./utils');
-const moods = [
-  { mood: 'excited about express!' },
-  { mood: 'route-tastic!' }
-];
+
 const expressions = [];
 seedElements(expressions, 'expressions');
+const animals = [];
+seedElements(animals, 'animals');
 
-//NOTE - Because this is our first route, it will always be checked first. If the request is for /moods, it will be handled here. If not, it will move on to the next route. is this efficient?
-app.get('/moods', (req, res, next) => {
-  res.json(moods);
-});
-
+// Get all expressions
 app.get('/expressions', (req, res, next) => {
   res.send(expressions);
 });
 
+// Get a single expression
 app.get('/expressions/:id', (req, res, next) => {
-
-  const found = getElementById(req.params.id, expressions);
-
-  if (!found) {
-    res.status(404).send('Expression not found');
-    return;
+  const foundExpression = getElementById(req.params.id, expressions);
+  if (foundExpression) {
+    res.send(foundExpression);
+  } else {
+    res.status(404).send();
   }
-  res.send(found);
 });
 
+// Update an expression
 app.put('/expressions/:id', (req, res, next) => {
   const expressionIndex = getIndexById(req.params.id, expressions);
   if (expressionIndex !== -1) {
@@ -44,6 +37,8 @@ app.put('/expressions/:id', (req, res, next) => {
     res.status(404).send();
   }
 });
+
+// Create an expression
 app.post('/expressions', (req, res, next) => {
   const receivedExpression = createElement('expressions', req.query);
   if (receivedExpression) {
@@ -54,7 +49,7 @@ app.post('/expressions', (req, res, next) => {
   }
 });
 
-
+// Delete an expression
 app.delete('/expressions/:id', (req, res, next) => {
   const expressionIndex = getIndexById(req.params.id, expressions);
   if (expressionIndex !== -1) {
@@ -65,5 +60,53 @@ app.delete('/expressions/:id', (req, res, next) => {
   }
 });
 
+// Get all animals
+app.get('/animals', (req, res, next) => {
+  res.send(animals);
+});
 
+// Get a single animal
+app.get('/animals/:id', (req, res, next) => {
+  const animal = getElementById(req.params.id, animals);
+  if (animal) {
+    res.send(animal);
+  } else {
+    res.status(404).send();
+  }
+});
+
+// Create an animal
+app.post('/animals', (req, res, next) => {
+  const receivedAnimal = createElement('animals', req.query);
+  if (receivedAnimal) {
+    animals.push(receivedAnimal);
+    res.status(201).send(receivedAnimal);
+  } else {
+    res.status(400).send();
+  }
+});
+
+// Update an animal
+app.put('/animals/:id', (req, res, next) => {
+  const animalIndex = getIndexById(req.params.id, animals);
+  if (animalIndex !== -1) {
+    updateElement(req.params.id, req.query, animals);
+    res.send(animals[animalIndex]);
+  } else {
+    res.status(404).send();
+  }
+});
+
+// Delete a single animal
+app.delete('/animals/:id', (req, res, next) => {
+  const animalIndex = getIndexById(req.params.id, animals);
+  if (animalIndex !== -1) {
+    animals.splice(animalIndex, 1);
+    res.status(204).send();
+  } else {
+    res.status(404).send();
+  }
+});
+
+// export app for use in main.js and for testing
 module.exports = { app };
