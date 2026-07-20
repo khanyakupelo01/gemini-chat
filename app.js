@@ -12,6 +12,11 @@ const {
 // Use static server to serve the Express Yourself Website
 app.use(express.static('public'))
 
+app.use((req, res, next) => {
+  console.log('Request received');
+});
+
+
 // Import and mount the expressionsRouter
 const expressionsRouter = require('./routes/expressions.js')
 app.use('/expressions', expressionsRouter)
